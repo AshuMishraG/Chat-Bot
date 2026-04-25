@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatBot - Conversational Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <button class="new-chat-button" onclick="startNewChat()">
+            <span class="material-icons">add</span>
+            New Chat
+          </button>
+        </div>
+
+        <nav class="navigation">
+          <a href="/ui" class="nav-item active">
+            <span class="material-icons">chat_bubble</span>
+            <span>Chat</span>
+          </a>
+          <a href="/cache" class="nav-item">
+            <span class="material-icons">storage</span>
+            <span>Cache Management</span>
+          </a>
+          <a href="/feedback" class="nav-item">
+            <span class="material-icons">feedback</span>
+            <span>Feedback</span>
+          </a>
+          <a href="#" class="nav-item" id="hardware-context-link" onclick="openHardwareContext()">
+            <span class="material-icons">hardware</span>
+            <span>Hardware Context</span>
+          </a>
+        </nav>
+
+            <div class="sidebar-divider">
+                <div class="divider-line"></div>
+                <span class="divider-text">Settings</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="settings-section">
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span class="material-icons">smart_toy</span>
+                        <span>Multi-Agent Mode</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span class="material-icons">wifi</span>
+                        <span>Device Connected</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="device-connection-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        <div class="sidebar-divider">
+          <div class="divider-line"></div>
+          <span class="divider-text">Conversations</span>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="chat-list"></div>
+        <div class="sidebar-footer">
+          <input
+            type="text"
+            id="user-id"
+            placeholder="User ID"
+            title="Enter a User ID"
+          />
+          <input
+            type="text"
+            id="device-number"
+            placeholder="Device Number"
+            title="Enter Device Number"
+          />
+          <input type="hidden" id="session-id" />
+        </div>
+      </div>
+
+      <div class="main-chat">
+        <div class="chat-container">
+          <div class="chat-header">
+            <h1>Conversational Assistant</h1>
+          </div>
+          <div id="home-cards-container"></div>
+          <div class="chat-messages" id="chat-messages"></div>
+          <div class="chat-input-area">
+            <div id="image-preview-container"></div>
+            <form id="chat-form">
+              <label
+                for="image-input"
+                class="image-input-label"
+                title="Add Image"
+              >
+                <span class="material-icons">attachment</span>
+              </label>
+              <input type="file" id="image-input" accept="image/*" />
+              <textarea
+                id="message-input"
+                placeholder="Ask the assistant anything..."
+              ></textarea>
+              <button type="submit" id="send-button" title="Send">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="icon"
+                >
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>

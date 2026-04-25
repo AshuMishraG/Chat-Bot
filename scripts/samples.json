@@ -1,0 +1,302 @@
+{
+    "action_cards": [
+        {
+            "id": "craft_negroni",
+            "type": "hardware",
+            "label": "Craft Negroni",
+            "payload": {
+                "command": "craft",
+                "recipe": {
+                    "id": "negroni",
+                    "name": "Negroni",
+                    "ingredients": [
+                        {
+                            "name": "Gin",
+                            "amount_ml": 30
+                        },
+                        {
+                            "name": "Campari",
+                            "amount_ml": 30
+                        },
+                        {
+                            "name": "Sweet Vermouth",
+                            "amount_ml": 30
+                        }
+                    ],
+                    "instructions": [
+                        "Add gin, Campari, and sweet vermouth into a mixing glass filled with ice.",
+                        "Stir until well chilled.",
+                        "Strain into a rocks glass over fresh ice.",
+                        "Express the oil of an orange peel over the drink and drop it in as garnish."
+                    ]
+                },
+                "current_config": {
+                    "device_id": "device123",
+                    "stations": [
+                        {
+                            "station_number": 1,
+                            "ingredient": {
+                                "name": "Scotch",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 200.0
+                        },
+                        {
+                            "station_number": 2,
+                            "ingredient": {
+                                "name": "Vodka",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 500.0
+                        },
+                        {
+                            "station_number": 3,
+                            "ingredient": {
+                                "name": "Coke",
+                                "brand": null,
+                                "perishable": true
+                            },
+                            "remaining_ml": 500.0
+                        },
+                        {
+                            "station_number": 4,
+                            "ingredient": null,
+                            "remaining_ml": null
+                        },
+                        {
+                            "station_number": 5,
+                            "ingredient": {
+                                "name": "Gin",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 200.0
+                        },
+                        {
+                            "station_number": 6,
+                            "ingredient": {
+                                "name": "Campari",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 15.0
+                        }
+                    ]
+                },
+                "instructions": [
+                    {
+                        "no": 1,
+                        "command": "add_ingredient",
+                        "params": {
+                            "station": 4,
+                            "ingredient": "Sweet Vermouth",
+                            "min_quantity": 30.0
+                        }
+                    },
+                    {
+                        "no": 2,
+                        "command": "add_ingredient",
+                        "params": {
+                            "station": 6,
+                            "ingredient": "Campari",
+                            "min_quantity": 30.0
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": "dfsdfjksdf23r34",
+            "type": "hardware",
+            "label": "Craft Negroni",
+            "payload": {
+                "command": "craft",
+                "recipe": {
+                    "id": "negroni",
+                    "name": "Negroni",
+                    "ingredients": [
+                        {
+                            "name": "Gin",
+                            "amount_ml": 30
+                        },
+                        {
+                            "name": "Campari",
+                            "amount_ml": 30
+                        },
+                        {
+                            "name": "Sweet Vermouth",
+                            "amount_ml": 30
+                        }
+                    ],
+                    "instructions": [
+                        "Add gin, Campari, and sweet vermouth into a mixing glass filled with ice.",
+                        "Stir until well chilled.",
+                        "Strain into a rocks glass over fresh ice.",
+                        "Express the oil of an orange peel over the drink and drop it in as garnish."
+                    ]
+                },
+                "current_config": {
+                    "device_id": "device123",
+                    "stations": [
+                        {
+                            "station_number": 1,
+                            "ingredient": {
+                                "name": "Scotch",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 200.0
+                        },
+                        {
+                            "station_number": 2,
+                            "ingredient": {
+                                "name": "Vodka",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 500.0
+                        },
+                        {
+                            "station_number": 3,
+                            "ingredient": {
+                                "name": "Coke",
+                                "brand": null,
+                                "perishable": true
+                            },
+                            "remaining_ml": 500.0
+                        },
+                        {
+                            "station_number": 4,
+                            "ingredient": {
+                                "name": "Tequila",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 500.0
+                        },
+                        {
+                            "station_number": 5,
+                            "ingredient": {
+                                "name": "Orange Juice",
+                                "brand": null,
+                                "perishable": true
+                            },
+                            "remaining_ml": 100.0
+                        },
+                        {
+                            "station_number": 6,
+                            "ingredient": {
+                                "name": "Campari",
+                                "brand": null,
+                                "perishable": false
+                            },
+                            "remaining_ml": 15.0
+                        }
+                    ]
+                },
+                "instructions": [
+                    {
+                        "no": 1,
+                        "command": "flush_station",
+                        "params": {
+                            "station": 3
+                        }
+                    },
+                    {
+                        "no": 2,
+                        "command": "clean_station",
+                        "params": {
+                            "station": 3
+                        }
+                    },
+                    {
+                        "no": 3,
+                        "command": "add_ingredient",
+                        "params": {
+                            "station": 3,
+                            "ingredient": "Gin",
+                            "min_quantity": 30.0
+                        }
+                    },
+                    {
+                        "no": 4,
+                        "command": "flush_station",
+                        "params": {
+                            "station": 5
+                        }
+                    },
+                    {
+                        "no": 5,
+                        "command": "clean_station",
+                        "params": {
+                            "station": 5
+                        }
+                    },
+                    {
+                        "no": 6,
+                        "command": "add_ingredient",
+                        "params": {
+                            "station": 5,
+                            "ingredient": "Sweet Vermouth",
+                            "min_quantity": 30.0
+                        }
+                    },
+                    {
+                        "no": 7,
+                        "command": "add_ingredient",
+                        "params": {
+                            "station": 6,
+                            "ingredient": "Campari",
+                            "min_quantity": 30.0
+                        }
+                    },
+                    {
+                        "no": 8,
+                        "command": "craft",
+                        "params": {
+                            "stations": [
+                                {
+                                    "station": 3,
+                                    "quantity": 30.0
+                                },
+                                {
+                                    "station": 5,
+                                    "quantity": 30.0
+                                },
+                                {
+                                    "station": 6,
+                                    "quantity": 30.0
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "substitutions": [],
+                "missing": []
+            }
+        },
+        {
+            "id": "some_unique_id",
+            "type": "chat",
+            "label": "Cocktails that pair well with Greek dishes",
+            "payload": {
+                "message": "Do you need drinks that pair with specific Greek dishes?"
+            }
+        },
+        {
+            "id": "some_unique_id",
+            "type": "content",
+            "label": "Cleaning instructions",
+            "payload": {
+                "content_type": "mixlist",
+                "data": {
+                    "id": "23112",
+                    "param1": ""
+                }
+            },
+            "score": 0.92
+        }
+    ]
+}

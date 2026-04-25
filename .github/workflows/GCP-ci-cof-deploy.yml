@@ -1,0 +1,50 @@
+name: ChatBot CI COF Deploy
+
+on:
+    push:
+        branches: [ chat-oriented-flow ]
+
+
+
+jobs:
+    deploy:
+        name: Setup Gcloud Account
+        runs-on: ubuntu-latest
+        env:
+            IMAGE_NAME: us-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/chatbot/${{ vars.GCP_CI_COF_APP_NAME }}
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Google Auth
+            id: auth
+            uses: google-github-actions/auth@v2
+            with:
+              credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+          - name: Docker Auth
+            id: docker-auth
+            uses: 'docker/login-action@v3'
+            with:
+              registry: us-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}
+              username: _json_key
+              password: ${{ secrets.GCP_CREDENTIALS }}
+
+          - name: Build Docker image
+            run: docker build . -t $IMAGE_NAME
+
+          - name: Push Docker image
+            run: docker push $IMAGE_NAME
+
+          - name: Deploy to Cloud Run
+            id: deploy
+            uses: google-github-actions/deploy-cloudrun@v2
+            with:
+              service: ${{ vars.GCP_CI_COF_APP_NAME }}
+              region: us-central1
+              flags: '--allow-unauthenticated --port 8000'
+              image: ${{ env.IMAGE_NAME }}
+
+          - name: Show Output
+            run: echo ${{ steps.deploy.outputs.url }}

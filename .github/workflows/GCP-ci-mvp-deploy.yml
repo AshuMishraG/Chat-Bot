@@ -1,0 +1,13 @@
+name: ChatBot CI MVP Deploy
+
+on:
+    push:
+        branches: [ mvp ]
+
+jobs:
+    deploy-cloudrun:
+      name: Deploy ChatBot to Cloud Run
+      uses: chatbotindia/global-workflows/.github/workflows/cicd-build.yml@main
+      with:
+        GCP_APP_NAME: 'chatbot-staging-mvp'
+      secrets: inherit

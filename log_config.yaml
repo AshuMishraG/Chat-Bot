@@ -1,0 +1,67 @@
+version: 1
+disable_existing_loggers: True
+
+formatters:
+  json:
+    (): app.core.logtools.CustomJsonFormatter
+    format: "%(asctime)s %(name)s %(levelname)s %(message)s"
+
+  access:
+    (): app.core.logtools.CustomJsonFormatter
+    format: "%(asctime)s %(levelname)s %(name)s - %(client_addr)s - \"%(request_line)s\" %(status_code)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: json
+    stream: ext://sys.stdout
+
+  access_console:
+    class: logging.StreamHandler
+    formatter: access
+    stream: ext://sys.stdout
+
+loggers:
+  root:
+    level: INFO
+    handlers: [console]
+
+  urllib3:
+    level: WARNING
+    handlers: [console]
+    propagate: no
+
+  httpcore:
+    level: WARN
+    handlers: [console]
+    propagate: no
+
+  httpx:
+    level: WARN
+    handlers: [console]
+    propagate: no
+
+  uvicorn:
+    level: INFO
+    handlers: [console]
+    propagate: no
+
+  uvicorn.error:
+    level: INFO
+    handlers: [console]
+    propagate: no
+
+  uvicorn.access:
+    level: INFO
+    handlers: [access_console]
+    propagate: no
+
+  app.core.logtools:
+    level: INFO
+    handlers: [console]
+    propagate: no
+
+  openai._base_client:
+    level: INFO
+    handlers: [console]
+    propagate: no

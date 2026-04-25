@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot - Cache Management</title>
+    <link rel="stylesheet" href="/static/css/cache.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-button" onclick="window.location.href='/ui?action=new'">
+                    <span class="material-icons">add</span>
+                    New Chat
+                </button>
+            </div>
+            <nav class="navigation">
+                <a href="/ui" class="nav-item">
+                    <span class="material-icons">chat_bubble_outline</span>
+                    <span>Chat</span>
+                </a>
+                <a href="/cache" class="nav-item active">
+                    <span class="material-icons">storage</span>
+                    <span>Cache Management</span>
+                </a>
+                <a href="/feedback" class="nav-item">
+                    <span class="material-icons">feedback</span>
+                    <span>Feedback</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1><span class="material-icons">storage</span> Cache Management</h1>
+            </div>
+
+            <div class="content-body">
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Cached Images</div>
+                        <div class="stat-value" id="total-images">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Accesses</div>
+                        <div class="stat-value" id="total-accesses">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Recent Accesses (24h)</div>
+                        <div class="stat-value" id="recent-accesses">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Cache Size</div>
+                        <div class="stat-value" id="cache-size">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Cache Enabled</div>
+                        <div class="stat-value" id="cache-enabled">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Hash Threshold</div>
+                        <div class="stat-value" id="hash-threshold">-</div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="refreshStats()">
+                        <span class="material-icons">refresh</span> Refresh Stats
+                    </button>
+                    <button class="btn btn-danger" onclick="clearCache()">
+                        <span class="material-icons">delete_sweep</span> Clear All Cache
+                    </button>
+                    <button class="btn btn-warning" onclick="clearOldCache()">
+                        <span class="material-icons">cleaning_services</span> Clear Old Cache
+                    </button>
+                </div>
+
+                <div class="error-container" id="error-container"></div>
+
+                <div class="search-section card">
+                    <h3>Search Cache</h3>
+                    <form class="search-form" onsubmit="searchCache(event)">
+                        <div class="form-group">
+                            <label for="image-format">Image Format:</label>
+                            <select id="image-format">
+                                <option value="">All formats</option>
+                                <option value="image/jpeg">JPEG</option>
+                                <option value="image/png">PNG</option>
+                                <option value="image/gif">GIF</option>
+                                <option value="image/webp">WebP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="min-confidence">Min Confidence:</label>
+                            <input type="number" id="min-confidence" min="0" max="1" step="0.1" placeholder="0.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="min-access-count">Min Access Count:</label>
+                            <input type="number" id="min-access-count" min="0" placeholder="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">search</span> Search
+                        </button>
+                    </form>
+                </div>
+
+                <div id="results-container" class="card">
+                    <table class="results-table" id="results-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Format</th>
+                                <th>Size (MB)</th>
+                                <th>Confidence</th>
+                                <th>Access Count</th>
+                                <th>Last Accessed</th>
+                                <th>Ingredients</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body">
+                        </tbody>
+                    </table>
+                    <p id="no-results-message" class="loading-text" style="display: none;">No results found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () { refreshStats(); });
+        async function refreshStats() { try { const response = await fetch('/api/cache/stats'); const data = await response.json(); document.getElementById('total-images').textContent = data.total_cached_images; document.getElementById('total-accesses').textContent = data.total_accesses; document.getElementById('recent-accesses').textContent = data.recent_accesses_24h; document.getElementById('cache-size').textContent = data.total_cache_size_mb + ' MB'; document.getElementById('cache-enabled').textContent = data.cache_enabled ? 'Yes' : 'No'; document.getElementById('hash-threshold').textContent = data.hash_threshold; } catch (error) { console.error('Error fetching stats:', error); showError('Failed to load cache statistics'); } }
+        async function clearCache() { if (!confirm('Are you sure you want to clear all cache? This action cannot be undone.')) { return; } try { const response = await fetch('/api/cache/clear', { method: 'DELETE' }); const data = await response.json(); alert(`Cache cleared successfully! Deleted ${data.deleted_images} images.`); refreshStats(); } catch (error) { console.error('Error clearing cache:', error); showError('Failed to clear cache'); } }
+        async function clearOldCache() { const days = prompt('Enter number of days (default: 30):', '30'); if (!days) return; try { const response = await fetch(`/api/cache/old?days=${days}`, { method: 'DELETE' }); const data = await response.json(); alert(`Old cache cleared! Deleted ${data.deleted_images} images older than ${days} days.`); refreshStats(); } catch (error) { console.error('Error clearing old cache:', error); showError('Failed to clear old cache'); } }
+        async function searchCache(event) { event.preventDefault(); const imageFormat = document.getElementById('image-format').value; const minConfidence = document.getElementById('min-confidence').value; const minAccessCount = document.getElementById('min-access-count').value; const params = new URLSearchParams(); if (imageFormat) params.append('image_format', imageFormat); if (minConfidence) params.append('min_confidence', minConfidence); if (minAccessCount) params.append('min_access_count', minAccessCount); try { const response = await fetch(`/api/cache/search?${params.toString()}`); const data = await response.json(); displaySearchResults(data.results); } catch (error) { console.error('Error searching cache:', error); showError('Failed to search cache'); } }
+        function displaySearchResults(results) { const table = document.getElementById('results-table'); const tbody = document.getElementById('results-body'); const noResultsMsg = document.getElementById('no-results-message'); tbody.innerHTML = ''; if (results.length === 0) { table.style.display = 'none'; noResultsMsg.style.display = 'block'; return; } results.forEach(result => { const row = document.createElement('tr'); row.innerHTML = `<td>${result.id}</td><td>${result.image_format}</td><td>${result.file_size_mb.toFixed(3)}</td><td>${result.analysis_confidence ? result.analysis_confidence.toFixed(2) : 'N/A'}</td><td>${result.access_count}</td><td>${new Date(result.last_accessed).toLocaleString()}</td><td>${result.ingredients_count}</td>`; tbody.appendChild(row); }); table.style.display = 'table'; noResultsMsg.style.display = 'none'; }
+        function showError(message) { const errorContainer = document.getElementById('error-container'); errorContainer.innerHTML = ''; const errorDiv = document.createElement('div'); errorDiv.className = 'error'; errorDiv.textContent = message; errorContainer.appendChild(errorDiv); setTimeout(() => { errorDiv.style.opacity = '0'; setTimeout(() => errorDiv.remove(), 500); }, 5000); }
+    </script>
+</body>
+
+</html>

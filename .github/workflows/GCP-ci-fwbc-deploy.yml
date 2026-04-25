@@ -1,0 +1,13 @@
+name: ChatBot CI FWBC Deploy
+
+on:
+    push:
+        branches: [ flat-without-chatbot-content ]
+
+jobs:
+    deploy-cloudrun:
+      name: Deploy ChatBot to Cloud Run
+      uses: chatbotindia/global-workflows/.github/workflows/cicd-build.yml@main
+      with:
+        GCP_APP_NAME: 'chatbot-staging-flat-without-content'
+      secrets: inherit

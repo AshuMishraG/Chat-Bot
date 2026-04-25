@@ -1,0 +1,397 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Mixlist",
+    "description": "Schema for Mixlist (collection of cocktail recipes)",
+    "type": "object",
+    "required": [
+        "name",
+        "description",
+        "cocktails"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the mixlist collection",
+            "minLength": 1,
+            "maxLength": 100
+        },
+        "description": {
+            "type": "string",
+            "description": "Detailed paragraph describing the mixlist's theme, purpose, or collection criteria",
+            "minLength": 50,
+            "maxLength": 500
+        },
+        "cocktails": {
+            "type": "array",
+            "description": "Array of cocktail recipes in this collection",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "description",
+                    "ingredients",
+                    "instructions",
+                    "glassware",
+                    "mixingTechnique"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the cocktail",
+                        "minLength": 1,
+                        "maxLength": 100
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Detailed paragraph describing the cocktail's flavor profile, emotions it evokes, strength, complexity, and overall character",
+                        "minLength": 50,
+                        "maxLength": 500
+                    },
+                    "image": {
+                        "type": "object",
+                        "description": "Image information for the cocktail",
+                        "properties": {
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to the cocktail image"
+                            },
+                            "alt": {
+                                "type": "string",
+                                "description": "Alt text for accessibility",
+                                "maxLength": 200
+                            },
+                            "photographer": {
+                                "type": "string",
+                                "description": "Photo credit"
+                            }
+                        }
+                    },
+                    "ice": {
+                        "type": "string",
+                        "description": "Type of ice required",
+                        "enum": [
+                            "none",
+                            "cubes",
+                            "crushed"
+                        ]
+                    },
+                    "ingredients": {
+                        "type": "array",
+                        "description": "List of ingredients with detailed categorization",
+                        "minItems": 1,
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "name",
+                                "quantity",
+                                "unit"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Specific ingredient name",
+                                    "minLength": 1
+                                },
+                                "quantity": {
+                                    "type": "number",
+                                    "description": "Amount of ingredient",
+                                    "exclusiveMinimum": 0
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "description": "Unit of measurement"
+                                },
+                                "category": {
+                                    "type": "object",
+                                    "description": "Hierarchical categorization of the ingredient",
+                                    "properties": {
+                                        "primary": {
+                                            "type": "string",
+                                            "description": "Primary category",
+                                            "enum": [
+                                                "base",
+                                                "mixer",
+                                                "additional",
+                                                "garnish"
+                                            ]
+                                        },
+                                        "secondary": {
+                                            "type": "string",
+                                            "description": "Sub-category",
+                                            "examples": [
+                                                "wine",
+                                                "tequila",
+                                                "rum",
+                                                "gin",
+                                                "champagne",
+                                                "liqueur",
+                                                "vodka",
+                                                "whiskey",
+                                                "brandy",
+                                                "beer",
+                                                "juice",
+                                                "soda",
+                                                "energy-drink",
+                                                "fruit",
+                                                "herb",
+                                                "spice",
+                                                "syrup",
+                                                "citrus",
+                                                "berry",
+                                                "tropical-fruit",
+                                                "stone-fruit",
+                                                "vegetable",
+                                                "nut",
+                                                "chocolate",
+                                                "coffee",
+                                                "tea"
+                                            ]
+                                        },
+                                        "flavourTags": {
+                                            "type": "array",
+                                            "description": "Taste-related tags for this specific ingredient",
+                                            "items": {
+                                                "type": "string",
+                                                "examples": [
+                                                    "sweet",
+                                                    "sour",
+                                                    "bitter",
+                                                    "salty",
+                                                    "umami",
+                                                    "spicy",
+                                                    "herbal",
+                                                    "fruity",
+                                                    "floral",
+                                                    "smoky",
+                                                    "earthy",
+                                                    "citrusy",
+                                                    "creamy",
+                                                    "nutty",
+                                                    "vanilla",
+                                                    "caramel",
+                                                    "minty",
+                                                    "tropical",
+                                                    "tart",
+                                                    "crisp",
+                                                    "smooth",
+                                                    "refreshing",
+                                                    "warming",
+                                                    "cooling",
+                                                    "rich",
+                                                    "light",
+                                                    "complex",
+                                                    "simple",
+                                                    "balanced",
+                                                    "bold"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                "optional": {
+                                    "type": "boolean",
+                                    "description": "Whether this ingredient is optional",
+                                    "default": false
+                                },
+                                "perishable": {
+                                    "type": "boolean",
+                                    "description": "Whether it is likely to decay or go bad quickly",
+                                    "default": false
+                                },
+                                "substitutes": {
+                                    "type": "array",
+                                    "description": "Alternative ingredients that can be used",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "description": "Special notes about this ingredient or its preparation",
+                                    "maxLength": 200
+                                }
+                            }
+                        }
+                    },
+                    "instructions": {
+                        "type": "array",
+                        "description": "Step-by-step preparation instructions",
+                        "minItems": 1,
+                        "items": {
+                            "type": "string",
+                            "description": "Detailed instruction for this step",
+                            "minLength": 5
+                        }
+                    },
+                    "mixingTechnique": {
+                        "type": "string",
+                        "description": "Primary mixing method",
+                        "enum": [
+                            "shaken",
+                            "stirred",
+                            "built",
+                            "layered",
+                            "muddled",
+                            "blended",
+                            "thrown",
+                            "rolled",
+                            "strained"
+                        ]
+                    },
+                    "glassware": {
+                        "type": "object",
+                        "description": "Serving glass information",
+                        "required": [
+                            "type"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "description": "Type of glass",
+                                "examples": [
+                                    "rocks",
+                                    "old-fashioned",
+                                    "highball",
+                                    "collins",
+                                    "martini",
+                                    "coupe",
+                                    "nick-and-nora",
+                                    "wine",
+                                    "champagne-flute",
+                                    "hurricane",
+                                    "tiki-mug",
+                                    "copper-mug",
+                                    "mule-mug",
+                                    "shot",
+                                    "snifter",
+                                    "punch-bowl",
+                                    "pint",
+                                    "margarita-glass"
+                                ]
+                            },
+                            "chilled": {
+                                "type": "boolean",
+                                "description": "Whether glass should be chilled",
+                                "default": false
+                            },
+                            "rimmed": {
+                                "type": "string",
+                                "description": "Rim preparation if applicable"
+                            }
+                        }
+                    },
+                    "tags": {
+                        "type": "array",
+                        "description": "Comprehensive categorization tags for filtering and discovery (Example: taste characteristics, alcohol strength perception, emotions or moods this cocktail evokes, suitable occasion and context, geographic and cultural origins, dietary considerations)",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "author": {
+                        "type": "object",
+                        "description": "Creator/attribution information",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Creator's name"
+                            },
+                            "establishment": {
+                                "type": "string",
+                                "description": "Bar/restaurant where created"
+                            },
+                            "year": {
+                                "type": "integer",
+                                "description": "Year created",
+                                "minimum": 1800,
+                                "maximum": 2030
+                            },
+                            "bio": {
+                                "type": "string",
+                                "description": "Brief bio of the creator",
+                                "maxLength": 500
+                            },
+                            "website": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Creator's website or social media"
+                            }
+                        }
+                    },
+                    "variations": {
+                        "type": "array",
+                        "description": "Common variations of this cocktail",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the variation"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "What makes this variation different"
+                                },
+                                "modifications": {
+                                    "type": "array",
+                                    "description": "Specific changes to make this variation",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "author": {
+            "type": "object",
+            "description": "Creator/curator information for the mixlist",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Creator's name"
+                },
+                "establishment": {
+                    "type": "string",
+                    "description": "Bar/restaurant or organization"
+                },
+                "year": {
+                    "type": "integer",
+                    "description": "Year created",
+                    "minimum": 1800,
+                    "maximum": 2030
+                },
+                "bio": {
+                    "type": "string",
+                    "description": "Brief bio of the creator/curator",
+                    "maxLength": 500
+                },
+                "website": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Creator's website or social media"
+                }
+            }
+        },
+        "tags": {
+            "type": "array",
+            "description": "Comprehensive categorization tags for filtering and discovery (ex. taste characteristics, Alcohol strength perception, Emotions or moods this cocktail evokes, suitable occasion and context, Geographic and cultural origins, dietary considerations)",
+            "items": {
+                "type": "string"
+            }
+        },
+        "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this mixlist was created"
+        },
+        "updated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this mixlist was last updated"
+        }
+    }
+}

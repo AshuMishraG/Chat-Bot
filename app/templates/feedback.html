@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot - Feedback Management</title>
+    <link rel="stylesheet" href="/static/css/cache.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-label { font-size: 0.875rem; color: #666; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #1a73e8; }
+        .stat-value.positive { color: #0f9d58; }
+        .stat-value.negative { color: #ea4335; }
+        .filter-section { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 0.875rem; color: #666; margin-bottom: 0.25rem; }
+        .form-group input, .form-group select { padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+        .badge-positive { background: #e6f4ea; color: #0f9d58; }
+        .badge-negative { background: #fce8e6; color: #ea4335; }
+        .badge-neutral { background: #e8f0fe; color: #1a73e8; }
+        .rating-icon { font-size: 1.25rem; vertical-align: middle; }
+        .comment-preview { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+        .copy-btn { cursor: pointer; color: #1a73e8; font-size: 0.875rem; }
+        .copy-btn:hover { text-decoration: underline; }
+        .pagination { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; justify-content: center; }
+        .results-table { width: 100%; border-collapse: collapse; background: white; }
+        .results-table th { background: #f1f3f4; padding: 1rem; text-align: left; font-weight: 600; position: sticky; top: 0; }
+        .results-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #e8eaed; }
+        .results-table tr:hover { background: #f8f9fa; }
+        .error { background: #fce8e6; color: #ea4335; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        .success { background: #e6f4ea; color: #0f9d58; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-button" onclick="window.location.href='/ui?action=new'">
+                    <span class="material-icons">add</span>
+                    New Chat
+                </button>
+            </div>
+            <nav class="navigation">
+                <a href="/ui" class="nav-item">
+                    <span class="material-icons">chat_bubble_outline</span>
+                    <span>Chat</span>
+                </a>
+                <a href="/cache" class="nav-item">
+                    <span class="material-icons">storage</span>
+                    <span>Cache Management</span>
+                </a>
+                <a href="/feedback" class="nav-item active">
+                    <span class="material-icons">feedback</span>
+                    <span>Feedback</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1><span class="material-icons">feedback</span> Feedback Management</h1>
+            </div>
+
+            <div class="content-body">
+                <!-- Statistics Dashboard -->
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Feedback</div>
+                        <div class="stat-value" id="total-feedback">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Thumbs Up</div>
+                        <div class="stat-value positive" id="thumbs-up">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Thumbs Down</div>
+                        <div class="stat-value negative" id="thumbs-down">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Positive Ratio</div>
+                        <div class="stat-value" id="positive-ratio">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Unique Users</div>
+                        <div class="stat-value" id="unique-users">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Recent (24h)</div>
+                        <div class="stat-value" id="recent-feedback">-</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="refreshStats()">
+                        <span class="material-icons">refresh</span> Refresh
+                    </button>
+                    <button class="btn btn-primary" onclick="exportToCSV()">
+                        <span class="material-icons">download</span> Export CSV
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-section card">
+                    <h3>Filter Feedback</h3>
+                    <form class="filter-grid" onsubmit="searchFeedback(event)">
+                        <div class="form-group">
+                            <label for="rating-filter">Rating:</label>
+                            <select id="rating-filter">
+                                <option value="">All</option>
+                                <option value="thumbs_up">👍 Thumbs Up</option>
+                                <option value="thumbs_down">👎 Thumbs Down</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reason-filter">Reason:</label>
+                            <select id="reason-filter">
+                                <option value="">All</option>
+                                <option value="accurate">Accurate</option>
+                                <option value="helpful">Helpful</option>
+                                <option value="complete">Complete</option>
+                                <option value="incorrect">Incorrect</option>
+                                <option value="irrelevant">Irrelevant</option>
+                                <option value="too_short">Too Short</option>
+                                <option value="too_long">Too Long</option>
+                                <option value="incomplete">Incomplete</option>
+                                <option value="unsafe">Unsafe</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="branch-filter">Branch:</label>
+                            <select id="branch-filter">
+                                <option value="">All</option>
+                                <option value="main">main</option>
+                                <option value="develop">develop</option>
+                                <option value="mvp-1">mvp-1</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="platform-filter">Platform:</label>
+                            <select id="platform-filter">
+                                <option value="">All</option>
+                                <option value="ios">iOS</option>
+                                <option value="android">Android</option>
+                                <option value="web">Web</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-id-filter">User ID:</label>
+                            <input type="text" id="user-id-filter" placeholder="Search user...">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-id-filter">Session ID:</label>
+                            <input type="text" id="session-id-filter" placeholder="Search session...">
+                        </div>
+                        <div class="form-group">
+                            <label for="date-from-filter">Date From:</label>
+                            <input type="date" id="date-from-filter">
+                        </div>
+                        <div class="form-group">
+                            <label for="date-to-filter">Date To:</label>
+                            <input type="date" id="date-to-filter">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="has-comment-filter">
+                                Only with comments
+                            </label>
+                        </div>
+                        <div class="form-group" style="align-self: end;">
+                            <button type="submit" class="btn btn-primary">
+                                <span class="material-icons">search</span> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="error-container" id="error-container"></div>
+
+                <!-- Results Table -->
+                <div id="results-container" class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Feedback Results</h3>
+                        <div id="result-count" style="color: #666;"></div>
+                    </div>
+                    <table class="results-table" id="results-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Rating</th>
+                                <th>Reason</th>
+                                <th>User ID</th>
+                                <th>Session ID</th>
+                                <th>Branch</th>
+                                <th>Platform</th>
+                                <th>Version</th>
+                                <th>Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body">
+                        </tbody>
+                    </table>
+                    <p id="no-results-message" class="loading-text" style="display: none;">No feedback found.</p>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOffset = 0;
+        const limit = 50;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            refreshStats();
+            searchFeedback({ preventDefault: () => {} });
+        });
+
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/feedback/stats');
+                const data = await response.json();
+                
+                document.getElementById('total-feedback').textContent = data.total_feedback;
+                document.getElementById('thumbs-up').textContent = data.thumbs_up;
+                document.getElementById('thumbs-down').textContent = data.thumbs_down;
+                document.getElementById('positive-ratio').textContent = data.thumbs_up_ratio + '%';
+                document.getElementById('unique-users').textContent = data.unique_users;
+                document.getElementById('recent-feedback').textContent = data.recent_feedback_24h;
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+                showError('Failed to load feedback statistics');
+            }
+        }
+
+        async function searchFeedback(event, offset = 0) {
+            event.preventDefault();
+            currentOffset = offset;
+
+            const params = new URLSearchParams();
+            const rating = document.getElementById('rating-filter').value;
+            const reason = document.getElementById('reason-filter').value;
+            const branch = document.getElementById('branch-filter').value;
+            const platform = document.getElementById('platform-filter').value;
+            const userId = document.getElementById('user-id-filter').value;
+            const sessionId = document.getElementById('session-id-filter').value;
+            const dateFrom = document.getElementById('date-from-filter').value;
+            const dateTo = document.getElementById('date-to-filter').value;
+            const hasComment = document.getElementById('has-comment-filter').checked;
+
+            if (rating) params.append('rating', rating);
+            if (reason) params.append('reason', reason);
+            if (branch) params.append('branch', branch);
+            if (platform) params.append('platform', platform);
+            if (userId) params.append('user_id', userId);
+            if (sessionId) params.append('session_id', sessionId);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+            if (hasComment) params.append('has_comment', 'true');
+            params.append('limit', limit);
+            params.append('offset', offset);
+
+            try {
+                const response = await fetch(`/api/feedback/search?${params.toString()}`);
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error searching feedback:', error);
+                showError('Failed to search feedback');
+            }
+        }
+
+        function displayResults(data) {
+            const tbody = document.getElementById('results-body');
+            const noResultsMsg = document.getElementById('no-results-message');
+            const table = document.getElementById('results-table');
+            const resultCount = document.getElementById('result-count');
+
+            tbody.innerHTML = '';
+
+            if (data.results.length === 0) {
+                table.style.display = 'none';
+                noResultsMsg.style.display = 'block';
+                resultCount.textContent = '';
+                return;
+            }
+
+            resultCount.textContent = `Showing ${data.offset + 1}-${Math.min(data.offset + data.limit, data.total_count)} of ${data.total_count}`;
+
+            data.results.forEach(feedback => {
+                const row = document.createElement('tr');
+                
+                const ratingIcon = feedback.rating === 'thumbs_up' ? '👍' : '👎';
+                const ratingClass = feedback.rating === 'thumbs_up' ? 'badge-positive' : 'badge-negative';
+                
+                const reasonBadgeClass = ['accurate', 'helpful', 'complete'].includes(feedback.reason) 
+                    ? 'badge-positive' 
+                    : ['incorrect', 'incomplete', 'unsafe', 'irrelevant'].includes(feedback.reason)
+                    ? 'badge-negative'
+                    : 'badge-neutral';
+
+                const date = new Date(feedback.created_at).toLocaleString();
+                const userIdShort = feedback.user_id.length > 15 ? feedback.user_id.substring(0, 12) + '...' : feedback.user_id;
+                const sessionIdShort = feedback.session_id.length > 15 ? feedback.session_id.substring(0, 12) + '...' : feedback.session_id;
+                const commentPreview = feedback.comment 
+                    ? `<span class="comment-preview" title="${escapeHtml(feedback.comment)}">${escapeHtml(feedback.comment.substring(0, 50))}${feedback.comment.length > 50 ? '...' : ''}</span>`
+                    : '<em style="color: #999;">No comment</em>';
+
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td><span class="badge ${ratingClass}">${ratingIcon} ${feedback.rating.replace('_', ' ')}</span></td>
+                    <td><span class="badge ${reasonBadgeClass}">${feedback.reason || 'N/A'}</span></td>
+                    <td><span class="copy-btn" onclick="copyToClipboard('${feedback.user_id}')" title="${escapeHtml(feedback.user_id)}">${userIdShort}</span></td>
+                    <td><span class="copy-btn" onclick="copyToClipboard('${feedback.session_id}')" title="${escapeHtml(feedback.session_id)}">${sessionIdShort}</span></td>
+                    <td>${feedback.branch || 'N/A'}</td>
+                    <td>${feedback.platform || 'N/A'}</td>
+                    <td>${feedback.app_version || 'N/A'}</td>
+                    <td>${commentPreview}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            table.style.display = 'table';
+            noResultsMsg.style.display = 'none';
+
+            // Pagination
+            renderPagination(data.total_count, data.offset);
+        }
+
+        function renderPagination(totalCount, currentOffset) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            const totalPages = Math.ceil(totalCount / limit);
+            const currentPage = Math.floor(currentOffset / limit) + 1;
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'btn btn-primary';
+                prevBtn.textContent = 'Previous';
+                prevBtn.onclick = () => searchFeedback({ preventDefault: () => {} }, (currentPage - 2) * limit);
+                pagination.appendChild(prevBtn);
+            }
+
+            // Page info
+            const pageInfo = document.createElement('span');
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            pagination.appendChild(pageInfo);
+
+            // Next button
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'btn btn-primary';
+                nextBtn.textContent = 'Next';
+                nextBtn.onclick = () => searchFeedback({ preventDefault: () => {} }, currentPage * limit);
+                pagination.appendChild(nextBtn);
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccess('Copied to clipboard!');
+            }).catch(() => {
+                showError('Failed to copy to clipboard');
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function exportToCSV() {
+            const params = new URLSearchParams();
+            const rating = document.getElementById('rating-filter').value;
+            const reason = document.getElementById('reason-filter').value;
+            const branch = document.getElementById('branch-filter').value;
+            const platform = document.getElementById('platform-filter').value;
+            const dateFrom = document.getElementById('date-from-filter').value;
+            const dateTo = document.getElementById('date-to-filter').value;
+
+            if (rating) params.append('rating', rating);
+            if (reason) params.append('reason', reason);
+            if (branch) params.append('branch', branch);
+            if (platform) params.append('platform', platform);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+
+            window.location.href = `/api/feedback/export?${params.toString()}`;
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            errorContainer.appendChild(errorDiv);
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                setTimeout(() => errorDiv.remove(), 500);
+            }, 3000);
+        }
+
+        function showSuccess(message) {
+            const errorContainer = document.getElementById('error-container');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            errorContainer.appendChild(successDiv);
+            setTimeout(() => {
+                successDiv.style.opacity = '0';
+                setTimeout(() => successDiv.remove(), 500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+// .devcontainer/devcontainer.json
+{
+    "name": "ChatBot App (Dev Container)",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "chatbot",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
+    "workspaceFolder": "/app",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python", // Python language support
+                "ms-python.vscode-pylance", // Enhanced IntelliSense
+                "ms-azuretools.vscode-docker", // Docker integration for VS Code
+                "njpwerner.autodocstring", // Python docstrings
+                "ms-python.black-formatter",
+                "littlefoxteam.vscode-python-test-adapter" // If you use Python testing
+            ],
+            "settings": {
+                // Tells VS Code which Python interpreter to use inside the container.
+                // This path might vary depending on your base Docker image.
+                // '/usr/local/bin/python' is common for official Python images.
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.pylintEnabled": true,
+                "python.linting.enabled": true,
+                "python.formatting.provider": "black", // or "black"
+                "editor.formatOnSave": true
+                // Add any other VS Code settings you prefer.
+            }
+        }
+    },
+    "remoteUser": "root", // Or your non-root user like "vscode" or "python",
+    "settings": {
+        "git.enabled": true,
+        "git.path": "/usr/bin/git"
+    }
+}

@@ -1,0 +1,13 @@
+name: ChatBot CI FSOR Deploy
+
+on:
+    push:
+        branches: [ flat-schema-of-recipe ]
+
+jobs:
+    deploy-cloudrun:
+      name: Deploy ChatBot to Cloud Run
+      uses: chatbotindia/global-workflows/.github/workflows/cicd-build.yml@main
+      with:
+        GCP_APP_NAME: 'chatbot-staging-fsor'
+      secrets: inherit

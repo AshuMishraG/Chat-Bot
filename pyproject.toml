@@ -1,0 +1,30 @@
+[project]
+name = "chat-bot"
+version = "0.1.0"
+description = "Conversational chatbot backend"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi>=0.115.12",
+    "uvicorn[standard]>=0.34.2",
+    "pydantic>=2.11.5",
+    "pydantic-settings>=2.9.1",
+    "pydantic-ai==0.2.9",
+    "jinja2>=3.1.6",
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9.9",
+    "pgvector>=0.2.2",
+    "imagehash>=4.3.1",
+    "Pillow==10.3.0",
+    "pillow-avif-plugin==1.4.2",
+    "python-json-logger==3.3.0",
+    "openai>=1.0.0",
+    "requests>=2.0.0",
+    "logfire[fastapi,pydantic,pydantic-ai,sqlalchemy,openai,requests,httpx]>=0.28.0",
+    "lxml>=5.0.0",
+    "trafilatura>=2.0.0",
+    ]
+
+[tool.setuptools.packages.find]
+where = ["."]  # Look in the current directory (project root)
+include = ["app*"]  # Include 'app' and anything starting with 'app.' (like app.core)
